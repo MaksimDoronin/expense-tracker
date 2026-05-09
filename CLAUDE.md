@@ -125,6 +125,6 @@ docs(claude): add commit convention rules
 ```
 
 **Правила:**
-- `description` — в нижнем регистре, без точки в конце, на английском языке
+- `description` — в нижнем регистре, без точки в конце, на **русском языке**
 - Один коммит = одна логическая единица изменений
 - Breaking changes помечаются `!` после типа: `feat(api)!: rename endpoint`
