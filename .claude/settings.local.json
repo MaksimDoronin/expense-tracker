@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init:*)",
+      "Bash(npm run *)",
+      "Bash(lsof -ti:3000)",
+      "Bash(lsof -ti:3001)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s http://localhost:3001/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"nobody@test.com\",\"password\":\"wrongpass\"}')",
+      "Bash(curl -s http://localhost:3001/auth/register -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"a\",\"password\":\"short\",\"name\":\"\"}')",
+      "Bash(curl -s http://localhost:3001/auth/register -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"test@test.com\",\"password\":\"password123\",\"name\":\"Test\"}')",
+      "Bash(echo \"PID: $!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/register)"
+    ]
+  }
+}

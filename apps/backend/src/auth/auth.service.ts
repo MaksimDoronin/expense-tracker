@@ -1,0 +1,61 @@
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
+import {
+  CreateUserCommand,
+  EmailAlreadyExistsError,
+  GetUserByEmailQuery,
+  PublicUser,
+  UserWithCredentials,
+} from '../users';
+
+interface AccessJwtPayload {
+  sub: string;
+  email: string;
+}
+
+export interface AuthResult {
+  user: PublicUser;
+  tokens: { accessToken: string };
+}
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+    private readonly jwt: JwtService,
+  ) {}
+
+  async register(name: string, email: string, password: string): Promise<AuthResult> {
+    const passwordHash = await bcrypt.hash(password, 10);
+    try {
+      const user = await this.commandBus.execute<CreateUserCommand, PublicUser>(
+        new CreateUserCommand(name, email, passwordHash),
+      );
+      return { user, tokens: { accessToken: await this.signToken(user) } };
+    } catch (err) {
+      if (err instanceof EmailAlreadyExistsError) {
+        throw new ConflictException(err.message);
+      }
+      throw err;
+    }
+  }
+
+  async login(email: string, password: string): Promise<AuthResult> {
+    const found = await this.queryBus.execute<GetUserByEmailQuery, UserWithCredentials | null>(
+      new GetUserByEmailQuery(email),
+    );
+    if (!found || !(await bcrypt.compare(password, found.passwordHash))) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const user: PublicUser = { id: found.id, name: found.name, email: found.email };
+    return { user, tokens: { accessToken: await this.signToken(user) } };
+  }
+
+  private signToken(user: PublicUser): Promise<string> {
+    const payload: AccessJwtPayload = { sub: user.id, email: user.email };
+    return this.jwt.signAsync(payload);
+  }
+}
