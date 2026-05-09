@@ -91,6 +91,35 @@ src/
 - **Prisma в корне**: схема и миграции находятся в `prisma/` в корне репозитория, а не внутри бэкенд-приложения.
 - **CORS**: бэкенд разрешает CORS для всех источников с учётными данными (`enableCors({ origin: true, credentials: true })`).
 
+## Работа с ветками (GitHub Flow)
+
+Проект следует [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow).
+
+**Правила:**
+
+- `main` — единственная постоянная ветка; всегда в рабочем состоянии и готова к деплою.
+- Любая новая работа (фича, фикс, рефакторинг) ведётся в отдельной ветке, созданной от `main`.
+- Имя ветки отражает тип и суть изменения: `<type>/<short-description>`.
+- Ветка вливается в `main` только через Pull Request после ревью.
+- После мерджа ветка удаляется.
+
+**Формат имени ветки:**
+
+```
+<type>/<short-description>
+```
+
+Типы совпадают с типами коммитов: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `perf`, `style`.
+
+**Примеры:**
+
+```
+feat/home-screen
+fix/auth-token-refresh
+refactor/expense-list
+chore/update-deps
+```
+
 ## Соглашение о коммитах
 
 Используется [Conventional Commits](https://www.conventionalcommits.org/). Формат:
