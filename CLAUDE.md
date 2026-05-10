@@ -1,18 +1,40 @@
-# CLAUDE.md
-
-Этот файл содержит инструкции для Claude Code (claude.ai/code) при работе с данным репозиторием.
-
 ## Архитектура
 
 Монорепозиторий на npm workspaces, состоящий из трёх пакетов:
 
 - `apps/backend` — NestJS API, работает на порту 3001 (настраивается через `BACKEND_PORT`)
 - `apps/frontend` — приложение на Next.js 16 / React 19, работает на порту 3000
-- `packages/shared` — общие TypeScript-типы (`Expense`, `CreateExpenseInput`, `Currency`), используемые обоими приложениями через алиас `@expense-tracker/shared`
+- `packages/shared` — общие TypeScript-типы, используемые обоими приложениями через алиас `@expense-tracker/shared`
 
-Prisma-клиент и схема находятся в корне репозитория (`prisma/schema.prisma`). Единственная модель `Expense` использует PostgreSQL (управляется через Docker). `DATABASE_URL` и другие переменные окружения загружаются из `.env` в корне репозитория; бэкенд также проверяет свой локальный `.env`.
+Prisma-клиент и схема находятся в корне репозитория (`prisma/schema.prisma`). PostgreSQL управляется через Docker. `DATABASE_URL` и другие переменные окружения загружаются из `.env` в корне; бэкенд также проверяет свой локальный `.env`.
 
 Алиас `@expense-tracker/shared` указывает на `packages/shared/src/index.ts` (определён в `tsconfig.base.json`), который расширяют оба приложения.
+
+## Схема базы данных
+
+Модели Prisma (`prisma/schema.prisma`):
+
+| Модель        | Назначение                                                              |
+|---------------|-------------------------------------------------------------------------|
+| `User`        | Пользователь: `id`, `name`, `email` (unique), `passwordHash`           |
+| `Category`    | Категория расходов: `name`, `color`, `icon`, `userId`; unique по `(userId, name)` |
+| `Transaction` | Транзакция: `amount` (Decimal 12,2), `type` (income/expense), `date`, `categoryId`, `userId` |
+| `Expense`     | Устаревшая заготовка — не используется в бизнес-логике                  |
+
+Enum `TransactionType`: `income` | `expense`.
+
+Каскадное удаление: удаление `User` удаляет его `Category` и `Transaction`. Удаление `Category` запрещено (`Restrict`), если есть транзакции.
+
+## Общие типы (`packages/shared/src/index.ts`)
+
+Экспортируемые интерфейсы:
+
+- `Expense`, `CreateExpenseInput`, `Currency` — устаревшие, из первой итерации
+- `AuthUser`, `AuthTokens`, `AuthResponse` — ответы аутентификации
+- `Category`, `CreateCategoryInput`, `UpdateCategoryInput`
+- `LoginInput`, `RegisterInput`
+
+**Правило:** любой тип, используемый и во фронтенде, и в бэкенде, должен находиться в `packages/shared/src/index.ts`, а не дублироваться.
 
 ## Основные команды
 
@@ -47,48 +69,11 @@ npm run type-check --workspace=frontend
 npm run type-check --workspace=backend
 ```
 
-Сборка отдельного воркспейса:
-```bash
-npm run build --workspace=backend
-```
-
-## Архитектура фронтенда — Feature Slice Design (FSD)
-
-Фронтенд следует методологии [Feature Slice Design](https://feature-sliced.design/). Слои сверху вниз (вышестоящие слои могут импортировать только из нижестоящих):
-
-```
-src/
-  app/          # Next.js App Router — роутинг, глобальные провайдеры, глобальные стили
-  features/     # Самодостаточные фича-слайсы
-    auth/
-      api/      # API-вызовы (authApi)
-      model/    # Состояние и бизнес-логика (AuthProvider, useLogin, useRegister)
-      ui/       # React-компоненты (LoginForm, RegisterForm)
-  shared/       # Переиспользуемые, проекто-независимые блоки
-    api/        # Базовый HTTP-клиент (apiRequest)
-    lib/        # Утилиты (cn)
-    types/      # Общие TypeScript-интерфейсы (AuthUser, AuthResult, …)
-    ui/         # shadcn/ui компоненты (Button, Input, Label, Card)
-```
-
-**Правила:**
-- `features/*` может импортировать только из `shared` — кросс-фича-импорты запрещены.
-- `app/` может импортировать из `features` и `shared`.
-- Новые общие UI-компоненты добавляются в `src/shared/ui/` по паттерну shadcn/ui (CVA + `cn`).
-- Алиас `@/*` указывает на `src/*`.
-
-**Настройка shadcn/ui:** компоненты добавляются вручную в `src/shared/ui/`. CSS design tokens объявляются в `globals.css` через `@theme inline` (совместимо с Tailwind v4).
-
-**Аутентификация:** JWT `accessToken` хранится в `localStorage` под ключом `access_token`. `AuthProvider` (в `features/auth/model/auth.context.tsx`) предоставляет `isAuthenticated`, `setAuth` и `logout` через хук `useAuth()`.
-
-**Переменные окружения:**
-- `NEXT_PUBLIC_API_URL` — базовый URL бэкенда (по умолчанию: `http://localhost:3001`)
-
 ## Ключевые соглашения
 
 - **Строгий TypeScript**: в `tsconfig.base.json` включены `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`.
-- **Общие типы в первую очередь**: любой тип, используемый и во фронтенде, и в бэкенде, должен находиться в `packages/shared/src/index.ts`, а не дублироваться в каждом приложении.
-- **Prisma в корне**: схема и миграции находятся в `prisma/` в корне репозитория, а не внутри бэкенд-приложения.
+- **Общие типы в первую очередь**: любой тип, используемый и во фронтенде, и в бэкенде, должен находиться в `packages/shared/src/index.ts`.
+- **Prisma в корне**: схема и миграции находятся в `prisma/` в корне, а не внутри бэкенд-приложения.
 - **CORS**: бэкенд разрешает CORS для всех источников с учётными данными (`enableCors({ origin: true, credentials: true })`).
 
 ## Работа с ветками (GitHub Flow)
@@ -183,16 +168,6 @@ EOF
 | `style`    | Форматирование, пробелы (не влияет на логику)           |
 
 **Scope** — имя затронутого модуля или пакета: `backend`, `frontend`, `shared`, `prisma`, `auth`, `categories`, `transactions` и т.д. Можно опустить, если изменения глобальные.
-
-**Примеры:**
-
-```
-feat(transactions): add income/expense tracking module
-fix(auth): handle expired JWT token on refresh
-refactor(categories): extract domain errors to separate file
-chore(prisma): add transactions migration
-docs(claude): add commit convention rules
-```
 
 **Правила:**
 - `description` — в нижнем регистре, без точки в конце, на **русском языке**
