@@ -120,6 +120,47 @@ refactor/expense-list
 chore/update-deps
 ```
 
+## Создание Pull Request
+
+PR создаётся через `gh pr create`. Перед созданием выполнить `git diff main...HEAD` для подготовки информативного описания.
+
+**Структура описания:**
+
+```markdown
+## Что сделано
+- краткий bullet-list изменений
+
+## Новые API endpoints
+- `METHOD /path` — что делает
+
+## Test plan
+- [ ] что проверить вручную
+```
+
+**Правила:**
+- Title — по Conventional Commits: `feat(scope): описание на русском`.
+- Base branch — всегда `main`.
+- После создания PR вернуть URL пользователю.
+
+**Пример:**
+
+```bash
+gh pr create \
+  --title "feat(frontend): главный экран с транзакциями" \
+  --base main \
+  --body "$(cat <<'EOF'
+## Что сделано
+- добавлен защищённый layout
+
+## Новые API endpoints
+- `GET /auth/me` — текущий пользователь
+
+## Test plan
+- [ ] логин → главный экран
+EOF
+)"
+```
+
 ## Соглашение о коммитах
 
 Используется [Conventional Commits](https://www.conventionalcommits.org/). Формат:
