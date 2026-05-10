@@ -16,6 +16,7 @@ export function useTransactions() {
   useEffect(() => {
     let cancelled = false;
     setIsLoading(true);
+    setError(null);
     transactionsApi
       .list()
       .then((data) => {

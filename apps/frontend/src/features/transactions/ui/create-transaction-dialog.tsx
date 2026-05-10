@@ -57,7 +57,7 @@ export function CreateTransactionDialog({ open, onClose, onCreated, categories }
       await transactionsApi.create({
         amount: Math.round(amountNum * 100) / 100,
         type,
-        date: new Date(date).toISOString(),
+        date: new Date(`${date}T00:00:00`).toISOString(),
         categoryId,
         description: description.trim() || undefined,
       });

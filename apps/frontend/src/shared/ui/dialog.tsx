@@ -39,7 +39,7 @@ export function Dialog({ open, onClose, title, description, children, className 
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={title}
+        aria-labelledby={title ? 'dialog-title' : undefined}
         className={cn(
           'relative w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-xl',
           className,
@@ -56,7 +56,7 @@ export function Dialog({ open, onClose, title, description, children, className 
         </button>
         {(title || description) && (
           <div className="mb-4 flex flex-col gap-1 pr-6">
-            {title && <h2 className="text-lg font-semibold">{title}</h2>}
+            {title && <h2 id="dialog-title" className="text-lg font-semibold">{title}</h2>}
             {description && <p className="text-sm text-muted-foreground">{description}</p>}
           </div>
         )}

@@ -23,9 +23,9 @@ export function TransactionListItem({ transaction, category }: Props) {
           <div className="truncate text-sm font-medium">
             {category?.name ?? 'Без категории'}
           </div>
-          <div className="truncate text-xs text-muted-foreground">
-            {transaction.description ?? formatDate(transaction.date)}
-          </div>
+          {transaction.description && (
+            <div className="truncate text-xs text-muted-foreground">{transaction.description}</div>
+          )}
         </div>
       </div>
       <div className="flex flex-col items-end">

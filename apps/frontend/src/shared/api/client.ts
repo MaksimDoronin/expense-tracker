@@ -1,5 +1,6 @@
+import { authStorage } from '@/shared/lib/auth-storage';
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-const TOKEN_KEY = 'access_token';
 
 export class ApiError extends Error {
   constructor(
@@ -11,13 +12,8 @@ export class ApiError extends Error {
   }
 }
 
-function readToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(TOKEN_KEY);
-}
-
 export async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = readToken();
+  const token = authStorage.read();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...((options?.headers as Record<string, string>) ?? {}),
@@ -29,7 +25,8 @@ export async function apiRequest<T>(path: string, options?: RequestInit): Promis
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
 
   if (res.status === 401 && typeof window !== 'undefined') {
-    window.localStorage.removeItem(TOKEN_KEY);
+    authStorage.clear();
+    window.dispatchEvent(new CustomEvent('auth:logout'));
   }
 
   if (!res.ok) {
