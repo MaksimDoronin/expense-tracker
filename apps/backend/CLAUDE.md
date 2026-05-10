@@ -38,7 +38,8 @@ src/
     queries/                # GetUserByEmail, GetUserById + handlers
     domain/
       user.entity.ts        # PublicUser, UserWithCredentials
-      errors.ts
+      errors.ts             # EmailAlreadyExistsError
+    index.ts                # barrel: экспортирует команды, запросы, ошибки и типы
     users.module.ts
   prisma/
     prisma.module.ts        # глобальный модуль
@@ -49,13 +50,15 @@ src/
 
 ## Модули и зависимости
 
-| Модуль              | Импортирует                          | Экспортирует        |
-|---------------------|--------------------------------------|---------------------|
-| `PrismaModule`      | —                                    | `PrismaService`     |
-| `UsersModule`       | `CqrsModule`, `PrismaModule`         | —                   |
-| `AuthModule`        | `UsersModule`, `JwtModule`, `PassportModule` | `JwtAuthGuard` |
-| `CategoriesModule`  | `CqrsModule`, `PrismaModule`, `UsersModule` | —           |
-| `TransactionsModule`| `CqrsModule`                         | —                   |
+| Модуль              | Импортирует                                   | Экспортирует        |
+|---------------------|-----------------------------------------------|---------------------|
+| `PrismaModule`      | —                                             | `PrismaService`     |
+| `UsersModule`       | `CqrsModule`                                  | —                   |
+| `AuthModule`        | `UsersModule`, `JwtModule`, `PassportModule`  | `JwtAuthGuard`      |
+| `CategoriesModule`  | `CqrsModule`, `PrismaModule`, `UsersModule`   | —                   |
+| `TransactionsModule`| `CqrsModule`                                  | —                   |
+
+`UsersModule` предоставляет barrel-экспорт через `src/users/index.ts`: команды (`CreateUserCommand`), запросы (`GetUserByEmailQuery`, `GetUserByIdQuery`), ошибки (`EmailAlreadyExistsError`) и типы (`PublicUser`, `UserWithCredentials`). `AuthModule` и `CategoriesModule` импортируют напрямую из этого barrel.
 
 ## CQRS-паттерн
 
@@ -83,10 +86,13 @@ src/
 Все защищённые маршруты требуют `Authorization: Bearer <token>`.
 
 ### Auth (`/auth`)
-| Метод | Путь               | Описание                         |
-|-------|--------------------|----------------------------------|
-| POST  | `/auth/register`   | Регистрация, возвращает токен    |
-| POST  | `/auth/login`      | Вход, возвращает токен           |
+| Метод | Путь               | Защита | Описание                                    |
+|-------|--------------------|--------|---------------------------------------------|
+| POST  | `/auth/register`   | —      | Регистрация, возвращает `AuthResult`        |
+| POST  | `/auth/login`      | —      | Вход, возвращает `AuthResult`               |
+| GET   | `/auth/me`         | JWT    | Текущий пользователь (`PublicUser`)         |
+
+`AuthResult`: `{ user: PublicUser; tokens: { accessToken: string } }`
 
 ### Categories (`/categories`) — защищены JWT
 | Метод  | Путь               | Описание                         |
@@ -110,13 +116,16 @@ src/
 
 Каждый модуль экспортирует доменные ошибки из `domain/errors.ts`. Контроллер перехватывает их и преобразует в HTTP-исключения NestJS:
 
-| Ошибка                              | HTTP-статус  |
-|-------------------------------------|--------------|
-| `OwnerNotFoundError`                | 401          |
-| `CategoryNotFoundError`             | 404          |
-| `CategoryNameTakenError`            | 409          |
-| `TransactionNotFoundError`          | 404          |
-| `CategoryNotFoundForTransactionError` | 404        |
+| Ошибка                                | Модуль         | HTTP-статус |
+|---------------------------------------|----------------|-------------|
+| `EmailAlreadyExistsError`             | `users`        | 409         |
+| `OwnerNotFoundError`                  | `categories`, `transactions` | 401 |
+| `CategoryNotFoundError`               | `categories`   | 404         |
+| `CategoryNameTakenError`              | `categories`   | 409         |
+| `TransactionNotFoundError`            | `transactions` | 404         |
+| `CategoryNotFoundForTransactionError` | `transactions` | 404         |
+
+`EmailAlreadyExistsError` перехватывается в `AuthService` (не в контроллере) и преобразуется в `ConflictException`.
 
 ## Валидация
 
