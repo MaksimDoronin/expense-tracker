@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(() => authStorage.read());
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoadingUser, setIsLoadingUser] = useState<boolean>(false);
+  const [isLoadingUser, setIsLoadingUser] = useState<boolean>(() => !!authStorage.read());
 
   const setAuth = useCallback((result: AuthResult) => {
     authStorage.save(result.tokens.accessToken);
@@ -49,7 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!cancelled) setUser(me);
       })
       .catch(() => {
-        if (!cancelled) logout();
+        // auth:logout event dispatched by client.ts already calls logout()
+        if (!cancelled) setUser(null);
       })
       .finally(() => {
         if (!cancelled) setIsLoadingUser(false);

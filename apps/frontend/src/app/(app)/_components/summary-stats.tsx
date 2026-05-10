@@ -2,9 +2,9 @@ import { Card, CardContent } from '@/shared/ui/card';
 import { cn } from '@/shared/lib/utils';
 
 const items = [
-  { label: 'Доходы', value: '0 ₽', tone: 'text-emerald-600' },
-  { label: 'Расходы', value: '0 ₽', tone: 'text-rose-600' },
-  { label: 'Баланс', value: '0 ₽', tone: 'text-foreground' },
+  { label: 'Доходы', value: '—', tone: 'text-emerald-600' },
+  { label: 'Расходы', value: '—', tone: 'text-rose-600' },
+  { label: 'Баланс', value: '—', tone: 'text-foreground' },
 ];
 
 export function SummaryStats() {

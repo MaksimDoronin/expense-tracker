@@ -25,6 +25,7 @@ export async function apiRequest<T>(path: string, options?: RequestInit): Promis
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
 
   if (res.status === 401 && typeof window !== 'undefined') {
+    // Clear token before dispatching so AuthProvider reads empty storage on the event
     authStorage.clear();
     window.dispatchEvent(new CustomEvent('auth:logout'));
   }
