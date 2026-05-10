@@ -18,7 +18,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <h1 className="text-4xl font-bold">Expense Tracker</h1>
+      <h1 className="text-4xl font-bold">Трекер расходов</h1>
       <p className="mt-2 text-sm text-muted-foreground">You are signed in.</p>
     </main>
   );
