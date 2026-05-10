@@ -6,6 +6,7 @@ import {
   CreateUserCommand,
   EmailAlreadyExistsError,
   GetUserByEmailQuery,
+  GetUserByIdQuery,
   PublicUser,
   UserWithCredentials,
 } from '../users';
@@ -52,6 +53,16 @@ export class AuthService {
     }
     const user: PublicUser = { id: found.id, name: found.name, email: found.email };
     return { user, tokens: { accessToken: await this.signToken(user) } };
+  }
+
+  async getMe(userId: string): Promise<PublicUser> {
+    const user = await this.queryBus.execute<GetUserByIdQuery, PublicUser | null>(
+      new GetUserByIdQuery(userId),
+    );
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
   }
 
   private signToken(user: PublicUser): Promise<string> {

@@ -26,6 +26,9 @@ Thumbs.db
 !.vscode/extensions.json
 !.vscode/settings.json
 
+# Claude Code internal plans
+.claude/plans/
+
 # TypeScript incremental build
 *.tsbuildinfo
 

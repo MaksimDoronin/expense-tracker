@@ -34,6 +34,19 @@ export interface AuthResponse {
   tokens: AuthTokens;
 }
 
+export type TransactionType = 'income' | 'expense';
+
+export interface Transaction {
+  id: string;
+  amount: string;
+  type: TransactionType;
+  description: string | null;
+  date: string;
+  categoryId: string;
+  userId: string;
+  createdAt: string;
+}
+
 export interface Category {
   id: string;
   name: string;

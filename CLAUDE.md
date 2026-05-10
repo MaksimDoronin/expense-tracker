@@ -91,6 +91,76 @@ src/
 - **Prisma в корне**: схема и миграции находятся в `prisma/` в корне репозитория, а не внутри бэкенд-приложения.
 - **CORS**: бэкенд разрешает CORS для всех источников с учётными данными (`enableCors({ origin: true, credentials: true })`).
 
+## Работа с ветками (GitHub Flow)
+
+Проект следует [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow).
+
+**Правила:**
+
+- `main` — единственная постоянная ветка; всегда в рабочем состоянии и готова к деплою.
+- Любая новая работа (фича, фикс, рефакторинг) ведётся в отдельной ветке, созданной от `main`.
+- Имя ветки отражает тип и суть изменения: `<type>/<short-description>`.
+- Ветка вливается в `main` только через Pull Request после ревью.
+- После мерджа ветка удаляется.
+
+**Формат имени ветки:**
+
+```
+<type>/<short-description>
+```
+
+Типы совпадают с типами коммитов: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `perf`, `style`.
+
+**Примеры:**
+
+```
+feat/home-screen
+fix/auth-token-refresh
+refactor/expense-list
+chore/update-deps
+```
+
+## Создание Pull Request
+
+PR создаётся через `gh pr create`. Перед созданием выполнить `git diff main...HEAD` для подготовки информативного описания.
+
+**Структура описания:**
+
+```markdown
+## Что сделано
+- краткий bullet-list изменений
+
+## Новые API endpoints
+- `METHOD /path` — что делает
+
+## Test plan
+- [ ] что проверить вручную
+```
+
+**Правила:**
+- Title — по Conventional Commits: `feat(scope): описание на русском`.
+- Base branch — всегда `main`.
+- После создания PR вернуть URL пользователю.
+
+**Пример:**
+
+```bash
+gh pr create \
+  --title "feat(frontend): главный экран с транзакциями" \
+  --base main \
+  --body "$(cat <<'EOF'
+## Что сделано
+- добавлен защищённый layout
+
+## Новые API endpoints
+- `GET /auth/me` — текущий пользователь
+
+## Test plan
+- [ ] логин → главный экран
+EOF
+)"
+```
+
 ## Соглашение о коммитах
 
 Используется [Conventional Commits](https://www.conventionalcommits.org/). Формат:

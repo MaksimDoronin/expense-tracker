@@ -1,5 +1,5 @@
 import { apiRequest } from '@/shared/api/client';
-import type { AuthResult, LoginInput, RegisterInput } from '@/shared/types/auth';
+import type { AuthResult, AuthUser, LoginInput, RegisterInput } from '@/shared/types/auth';
 
 export const authApi = {
   login: (data: LoginInput) =>
@@ -13,4 +13,6 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  me: () => apiRequest<AuthUser>('/auth/me'),
 };
