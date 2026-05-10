@@ -27,12 +27,14 @@ Enum `TransactionType`: `income` | `expense`.
 
 ## Общие типы (`packages/shared/src/index.ts`)
 
-Экспортируемые интерфейсы:
-
-- `Expense`, `CreateExpenseInput`, `Currency` — устаревшие, из первой итерации
-- `AuthUser`, `AuthTokens`, `AuthResponse` — ответы аутентификации
-- `Category`, `CreateCategoryInput`, `UpdateCategoryInput`
-- `LoginInput`, `RegisterInput`
+| Экспорт                                              | Назначение                                      |
+|------------------------------------------------------|-------------------------------------------------|
+| `AuthUser`, `AuthTokens`, `AuthResponse`             | Ответы аутентификации                           |
+| `LoginInput`, `RegisterInput`                        | Входные данные форм авторизации                 |
+| `TransactionType`                                    | `'income' \| 'expense'`                         |
+| `Transaction`                                        | Публичное представление транзакции              |
+| `Category`, `CreateCategoryInput`, `UpdateCategoryInput` | Категории расходов                          |
+| `Expense`, `CreateExpenseInput`, `Currency`          | Устаревшие — из первой итерации, не удалять     |
 
 **Правило:** любой тип, используемый и во фронтенде, и в бэкенде, должен находиться в `packages/shared/src/index.ts`, а не дублироваться.
 
