@@ -14,7 +14,8 @@
       "Bash(curl -s -X POST http://localhost:3001/transactions -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlN2EyMy01MTY5LTQyZWQtOWU5ZS1mMWM5MDA1YzQzZmEiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NzgzNDMxODgsImV4cCI6MTc3ODM0NDA4OH0.vZGcXNChv2s-VR3zulVkJ59ff_-hEqLDFGC6WvKwMi0' -H 'Content-Type: application/json' -d '{\"amount\":1500.50,\"type\":\"expense\",\"description\":\"Поход в магазин\",\"date\":\"2026-05-09\",\"categoryId\":\"ab5333fe-f747-4906-8367-7c30b4c865ab\"}')",
       "Bash(gh pr *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
