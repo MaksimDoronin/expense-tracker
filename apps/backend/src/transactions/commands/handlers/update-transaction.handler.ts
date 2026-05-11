@@ -14,6 +14,15 @@ export class UpdateTransactionHandler
 {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Обновляет только переданные поля транзакции. Поля с `undefined` остаются без изменений.
+   * Если меняется `categoryId`, дополнительно проверяется принадлежность новой категории пользователю.
+   *
+   * @param command - Данные для обновления; `id` и `userId` обязательны, остальные поля — опциональны.
+   * @returns Обновлённая транзакция в виде `PublicTransaction`.
+   * @throws {TransactionNotFoundError} Если транзакция не найдена или не принадлежит пользователю.
+   * @throws {CategoryNotFoundForTransactionError} Если новая категория не существует или принадлежит другому пользователю.
+   */
   async execute(command: UpdateTransactionCommand): Promise<PublicTransaction> {
     const existing = await this.prisma.transaction.findFirst({
       where: { id: command.id, userId: command.userId },

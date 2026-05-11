@@ -1,6 +1,7 @@
 import { Prisma, TransactionType } from '@prisma/client';
 import { PublicTransaction } from './domain/transaction.entity';
 
+/** Набор полей Prisma, выбираемых при каждом запросе транзакции. Единственный источник истины для проекции. */
 export const transactionSelect = {
   id: true,
   amount: true,
@@ -23,6 +24,13 @@ type TransactionRow = {
   createdAt: Date;
 };
 
+/**
+ * Преобразует строку Prisma в публичный DTO транзакции.
+ * Конвертирует `Prisma.Decimal` → `string`, чтобы избежать потери точности при сериализации в JSON.
+ *
+ * @param row - Запись из БД, выбранная через `transactionSelect`.
+ * @returns Объект `PublicTransaction` с `amount` в виде строки.
+ */
 export function toPublicTransaction(row: TransactionRow): PublicTransaction {
   return { ...row, amount: row.amount.toString() };
 }

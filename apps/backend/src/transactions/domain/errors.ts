@@ -1,3 +1,4 @@
+/** Выбрасывается, когда транзакция не найдена или не принадлежит пользователю. Контроллер преобразует в HTTP 404. */
 export class TransactionNotFoundError extends Error {
   constructor() {
     super('Transaction not found');
@@ -5,6 +6,7 @@ export class TransactionNotFoundError extends Error {
   }
 }
 
+/** Выбрасывается, когда указанная категория не существует или принадлежит другому пользователю. Контроллер преобразует в HTTP 404. */
 export class CategoryNotFoundForTransactionError extends Error {
   constructor() {
     super('Category not found or does not belong to user');
@@ -12,6 +14,7 @@ export class CategoryNotFoundForTransactionError extends Error {
   }
 }
 
+/** Выбрасывается, когда владелец транзакции (пользователь) не найден в БД. Контроллер преобразует в HTTP 401. */
 export class OwnerNotFoundError extends Error {
   constructor() {
     super('User not found');

@@ -11,6 +11,13 @@ export class ListTransactionsHandler
 {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Возвращает список транзакций пользователя с применением всех переданных фильтров.
+   * Результат сортируется по дате по убыванию.
+   *
+   * @param query - Параметры выборки: `userId` обязателен, остальные фильтры опциональны.
+   * @returns Массив `PublicTransaction[]`, отсортированный по `date DESC`.
+   */
   async execute(query: ListTransactionsQuery): Promise<PublicTransaction[]> {
     const where: Prisma.TransactionWhereInput = { userId: query.userId };
 

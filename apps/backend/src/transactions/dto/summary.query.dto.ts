@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsInt, Max, Min } from 'class-validator';
 
+/** Query-параметры для получения ежемесячной сводки транзакций. */
 export class SummaryQueryDto {
   @IsInt()
   @Min(1)

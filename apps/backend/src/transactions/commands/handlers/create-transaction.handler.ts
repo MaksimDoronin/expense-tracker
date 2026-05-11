@@ -18,6 +18,14 @@ export class CreateTransactionHandler
     private readonly queryBus: QueryBus,
   ) {}
 
+  /**
+   * Создаёт транзакцию после проверки существования пользователя и категории.
+   *
+   * @param command - Данные для создания транзакции.
+   * @returns Созданная транзакция в виде `PublicTransaction`.
+   * @throws {OwnerNotFoundError} Если пользователь с `command.userId` не найден.
+   * @throws {CategoryNotFoundForTransactionError} Если категория не существует или не принадлежит пользователю.
+   */
   async execute(command: CreateTransactionCommand): Promise<PublicTransaction> {
     const user = await this.queryBus.execute(new GetUserByIdQuery(command.userId));
     if (!user) throw new OwnerNotFoundError();

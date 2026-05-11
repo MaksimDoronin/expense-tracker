@@ -19,6 +19,15 @@ export class TransactionsService {
     private readonly queryBus: QueryBus,
   ) {}
 
+  /**
+   * Создаёт новую транзакцию.
+   *
+   * @param userId - UUID аутентифицированного пользователя.
+   * @param dto - Данные новой транзакции.
+   * @returns Созданная транзакция.
+   * @throws {OwnerNotFoundError} Если пользователь не найден.
+   * @throws {CategoryNotFoundForTransactionError} Если категория не принадлежит пользователю.
+   */
   create(userId: string, dto: CreateTransactionDto): Promise<PublicTransaction> {
     return this.commandBus.execute(
       new CreateTransactionCommand(
@@ -32,6 +41,13 @@ export class TransactionsService {
     );
   }
 
+  /**
+   * Возвращает список транзакций пользователя с опциональной фильтрацией.
+   *
+   * @param userId - UUID аутентифицированного пользователя.
+   * @param query - Параметры фильтрации (диапазон дат, тип, категория).
+   * @returns Массив транзакций, отсортированный по дате по убыванию.
+   */
   findAll(userId: string, query: ListTransactionsQueryDto): Promise<PublicTransaction[]> {
     return this.queryBus.execute(
       new ListTransactionsQuery(
@@ -44,16 +60,41 @@ export class TransactionsService {
     );
   }
 
+  /**
+   * Возвращает агрегированную сводку за месяц.
+   *
+   * @param userId - UUID аутентифицированного пользователя.
+   * @param query - Месяц и год.
+   * @returns `TransactionSummary` с итогами доходов, расходов и балансом.
+   */
   getSummary(userId: string, query: SummaryQueryDto): Promise<TransactionSummary> {
     return this.queryBus.execute(
       new GetTransactionsSummaryQuery(userId, query.month, query.year),
     );
   }
 
+  /**
+   * Возвращает транзакцию по ID.
+   *
+   * @param userId - UUID аутентифицированного пользователя.
+   * @param id - UUID транзакции.
+   * @returns Найденная транзакция.
+   * @throws {TransactionNotFoundError} Если транзакция не найдена или принадлежит другому пользователю.
+   */
   findOne(userId: string, id: string): Promise<PublicTransaction> {
     return this.queryBus.execute(new GetTransactionByIdQuery(id, userId));
   }
 
+  /**
+   * Частично обновляет транзакцию.
+   *
+   * @param userId - UUID аутентифицированного пользователя.
+   * @param id - UUID обновляемой транзакции.
+   * @param dto - Поля для обновления; переданные поля перезаписываются, остальные не меняются.
+   * @returns Обновлённая транзакция.
+   * @throws {TransactionNotFoundError} Если транзакция не найдена или не принадлежит пользователю.
+   * @throws {CategoryNotFoundForTransactionError} Если новая категория не принадлежит пользователю.
+   */
   update(userId: string, id: string, dto: UpdateTransactionDto): Promise<PublicTransaction> {
     const d = dto as CreateTransactionDto;
     return this.commandBus.execute(
@@ -61,6 +102,14 @@ export class TransactionsService {
     );
   }
 
+  /**
+   * Удаляет транзакцию.
+   *
+   * @param userId - UUID аутентифицированного пользователя.
+   * @param id - UUID удаляемой транзакции.
+   * @returns `void`
+   * @throws {TransactionNotFoundError} Если транзакция не найдена или не принадлежит пользователю.
+   */
   remove(userId: string, id: string): Promise<void> {
     return this.commandBus.execute(new DeleteTransactionCommand(id, userId));
   }

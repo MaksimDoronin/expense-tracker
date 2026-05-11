@@ -11,6 +11,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
+/** DTO для создания транзакции. Валидируется глобальным `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`). */
 export class CreateTransactionDto {
   @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()

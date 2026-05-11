@@ -10,6 +10,14 @@ export class GetTransactionsSummaryHandler
 {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Вычисляет агрегированную сводку доходов и расходов за заданный месяц.
+   * Использует `groupBy` Prisma для агрегации по типу и категории.
+   * Суммы возвращаются в виде строк с двумя знаками после запятой.
+   *
+   * @param query - `userId`, `month` (1–12) и `year`.
+   * @returns `TransactionSummary` с `totalIncome`, `totalExpense`, `balance` и разбивкой по категориям.
+   */
   async execute(query: GetTransactionsSummaryQuery): Promise<TransactionSummary> {
     const from = new Date(query.year, query.month - 1, 1);
     const to = new Date(query.year, query.month, 1);

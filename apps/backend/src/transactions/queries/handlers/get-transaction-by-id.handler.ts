@@ -11,6 +11,13 @@ export class GetTransactionByIdHandler
 {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Возвращает одну транзакцию по ID с проверкой принадлежности пользователю.
+   *
+   * @param query - `id` транзакции и `userId` владельца.
+   * @returns `PublicTransaction` для найденной транзакции.
+   * @throws {TransactionNotFoundError} Если транзакция не найдена или принадлежит другому пользователю.
+   */
   async execute(query: GetTransactionByIdQuery): Promise<PublicTransaction> {
     const transaction = await this.prisma.transaction.findFirst({
       where: { id: query.id, userId: query.userId },
