@@ -36,13 +36,9 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   /**
-   * `POST /transactions` — создаёт транзакцию для аутентифицированного пользователя.
-   *
    * @param user - JWT-payload аутентифицированного пользователя (`sub` = userId).
    * @param dto - Данные новой транзакции.
-   * @returns Созданная транзакция (`PublicTransaction`).
-   * @throws {UnauthorizedException} Если пользователь не найден в БД.
-   * @throws {NotFoundException} Если категория не существует или не принадлежит пользователю.
+   * @returns Созданная транзакция (`PublicTransaction`). HTTP-статусы — см. `@ApiResponse`.
    */
   @Post()
   @ApiOperation({ summary: 'Создать транзакцию' })
@@ -62,8 +58,6 @@ export class TransactionsController {
   }
 
   /**
-   * `GET /transactions` — возвращает список транзакций с опциональной фильтрацией.
-   *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @param query - Параметры фильтрации (dateFrom, dateTo, type, categoryId).
    * @returns Массив `PublicTransaction[]`, отсортированный по дате по убыванию.
@@ -80,8 +74,7 @@ export class TransactionsController {
   }
 
   /**
-   * `GET /transactions/summary` — возвращает агрегированную сводку за месяц.
-   * Маршрут объявлен до `/:id`, чтобы `summary` не воспринималось как динамический параметр.
+   * Объявлен до `/:id`, чтобы строка «summary» не воспринималась как динамический параметр.
    *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @param query - Месяц (1–12) и год.
@@ -97,12 +90,9 @@ export class TransactionsController {
   }
 
   /**
-   * `GET /transactions/:id` — возвращает одну транзакцию по ID.
-   *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @param id - UUID транзакции.
-   * @returns Найденная транзакция (`PublicTransaction`).
-   * @throws {NotFoundException} Если транзакция не найдена или не принадлежит пользователю.
+   * @returns Найденная транзакция (`PublicTransaction`). HTTP-статусы — см. `@ApiResponse`.
    */
   @Get(':id')
   @ApiOperation({ summary: 'Получить транзакцию по ID' })
@@ -119,13 +109,10 @@ export class TransactionsController {
   }
 
   /**
-   * `PATCH /transactions/:id` — частично обновляет транзакцию.
-   *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @param id - UUID обновляемой транзакции.
    * @param dto - Поля для обновления; непереданные поля остаются без изменений.
-   * @returns Обновлённая транзакция (`PublicTransaction`).
-   * @throws {NotFoundException} Если транзакция или новая категория не найдены / не принадлежат пользователю.
+   * @returns Обновлённая транзакция (`PublicTransaction`). HTTP-статусы — см. `@ApiResponse`.
    */
   @Patch(':id')
   @ApiOperation({ summary: 'Обновить транзакцию' })
@@ -149,12 +136,9 @@ export class TransactionsController {
   }
 
   /**
-   * `DELETE /transactions/:id` — удаляет транзакцию. Отвечает HTTP 204 без тела.
-   *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @param id - UUID удаляемой транзакции.
-   * @returns `void`
-   * @throws {NotFoundException} Если транзакция не найдена или не принадлежит пользователю.
+   * @returns `void`. HTTP-статусы — см. `@ApiResponse`.
    */
   @Delete(':id')
   @HttpCode(204)

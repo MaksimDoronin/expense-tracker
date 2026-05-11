@@ -12,7 +12,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-/** DTO для создания транзакции. Валидируется глобальным `ValidationPipe` (`whitelist`, `forbidNonWhitelisted`, `transform`). */
+/** DTO для создания транзакции. Поля аннотированы `@ApiProperty` для Swagger и декораторами `class-validator` для глобального `ValidationPipe`. */
 export class CreateTransactionDto {
   @ApiProperty({ description: 'Сумма транзакции (положительное, не более 2 знаков после запятой)', example: 1500.5 })
   @IsNumber({ maxDecimalPlaces: 2 })
