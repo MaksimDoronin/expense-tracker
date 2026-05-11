@@ -12,6 +12,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { JwtAccessPayload } from '../auth/strategies/jwt.strategy';
@@ -27,6 +28,8 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionsService } from './transactions.service';
 
 /** REST-контроллер для управления транзакциями. Все маршруты защищены JWT-аутентификацией. */
+@ApiTags('transactions')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('transactions')
 export class TransactionsController {
@@ -42,6 +45,11 @@ export class TransactionsController {
    * @throws {NotFoundException} Если категория не существует или не принадлежит пользователю.
    */
   @Post()
+  @ApiOperation({ summary: 'Создать транзакцию' })
+  @ApiResponse({ status: 201, description: 'Транзакция создана.' })
+  @ApiResponse({ status: 400, description: 'Невалидные данные запроса.' })
+  @ApiResponse({ status: 401, description: 'Пользователь не аутентифицирован или не найден.' })
+  @ApiResponse({ status: 404, description: 'Категория не найдена или не принадлежит пользователю.' })
   async create(@CurrentUser() user: JwtAccessPayload, @Body() dto: CreateTransactionDto) {
     try {
       return await this.transactionsService.create(user.sub, dto);
@@ -61,6 +69,9 @@ export class TransactionsController {
    * @returns Массив `PublicTransaction[]`, отсортированный по дате по убыванию.
    */
   @Get()
+  @ApiOperation({ summary: 'Список транзакций с фильтрацией' })
+  @ApiResponse({ status: 200, description: 'Массив транзакций, отсортированных по дате (DESC).' })
+  @ApiResponse({ status: 401, description: 'Пользователь не аутентифицирован.' })
   findAll(
     @CurrentUser() user: JwtAccessPayload,
     @Query() query: ListTransactionsQueryDto,
@@ -77,6 +88,10 @@ export class TransactionsController {
    * @returns `TransactionSummary` с итогами доходов, расходов и балансом.
    */
   @Get('summary')
+  @ApiOperation({ summary: 'Сводка доходов и расходов за месяц' })
+  @ApiResponse({ status: 200, description: 'Агрегированная сводка: totalIncome, totalExpense, balance, byCategory.' })
+  @ApiResponse({ status: 400, description: 'Невалидные параметры месяца или года.' })
+  @ApiResponse({ status: 401, description: 'Пользователь не аутентифицирован.' })
   getSummary(@CurrentUser() user: JwtAccessPayload, @Query() query: SummaryQueryDto) {
     return this.transactionsService.getSummary(user.sub, query);
   }
@@ -90,6 +105,10 @@ export class TransactionsController {
    * @throws {NotFoundException} Если транзакция не найдена или не принадлежит пользователю.
    */
   @Get(':id')
+  @ApiOperation({ summary: 'Получить транзакцию по ID' })
+  @ApiResponse({ status: 200, description: 'Транзакция найдена.' })
+  @ApiResponse({ status: 401, description: 'Пользователь не аутентифицирован.' })
+  @ApiResponse({ status: 404, description: 'Транзакция не найдена или не принадлежит пользователю.' })
   async findOne(@CurrentUser() user: JwtAccessPayload, @Param('id') id: string) {
     try {
       return await this.transactionsService.findOne(user.sub, id);
@@ -109,6 +128,11 @@ export class TransactionsController {
    * @throws {NotFoundException} Если транзакция или новая категория не найдены / не принадлежат пользователю.
    */
   @Patch(':id')
+  @ApiOperation({ summary: 'Обновить транзакцию' })
+  @ApiResponse({ status: 200, description: 'Транзакция обновлена.' })
+  @ApiResponse({ status: 400, description: 'Невалидные данные запроса.' })
+  @ApiResponse({ status: 401, description: 'Пользователь не аутентифицирован.' })
+  @ApiResponse({ status: 404, description: 'Транзакция или категория не найдены.' })
   async update(
     @CurrentUser() user: JwtAccessPayload,
     @Param('id') id: string,
@@ -134,6 +158,10 @@ export class TransactionsController {
    */
   @Delete(':id')
   @HttpCode(204)
+  @ApiOperation({ summary: 'Удалить транзакцию' })
+  @ApiResponse({ status: 204, description: 'Транзакция удалена.' })
+  @ApiResponse({ status: 401, description: 'Пользователь не аутентифицирован.' })
+  @ApiResponse({ status: 404, description: 'Транзакция не найдена или не принадлежит пользователю.' })
   async remove(@CurrentUser() user: JwtAccessPayload, @Param('id') id: string) {
     try {
       await this.transactionsService.remove(user.sub, id);
