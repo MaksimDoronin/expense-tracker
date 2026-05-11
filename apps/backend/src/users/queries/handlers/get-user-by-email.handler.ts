@@ -9,6 +9,12 @@ export class GetUserByEmailHandler
 {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Ищет пользователя по email и возвращает данные вместе с хешем пароля.
+   *
+   * @param query - Запрос с email искомого пользователя.
+   * @returns `UserWithCredentials` если найден, иначе `null`.
+   */
   async execute(query: GetUserByEmailQuery): Promise<UserWithCredentials | null> {
     const user = await this.prisma.user.findUnique({
       where: { email: query.email },

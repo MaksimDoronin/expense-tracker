@@ -29,6 +29,15 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
+  /**
+   * Регистрирует нового пользователя: хеширует пароль, создаёт запись и выдаёт токен.
+   *
+   * @param name - Отображаемое имя пользователя.
+   * @param email - Email (должен быть уникальным).
+   * @param password - Пароль в открытом виде; хешируется bcrypt с cost 10.
+   * @returns `AuthResult` с `PublicUser` и `accessToken`.
+   * @throws {ConflictException} Если email уже зарегистрирован.
+   */
   async register(name: string, email: string, password: string): Promise<AuthResult> {
     const passwordHash = await bcrypt.hash(password, 10);
     try {
@@ -44,6 +53,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Аутентифицирует пользователя по email и паролю.
+   *
+   * @param email - Email зарегистрированного пользователя.
+   * @param password - Пароль в открытом виде; сверяется с bcrypt-хешем из БД.
+   * @returns `AuthResult` с `PublicUser` и `accessToken`.
+   * @throws {UnauthorizedException} Если email не найден или пароль неверен.
+   */
   async login(email: string, password: string): Promise<AuthResult> {
     const found = await this.queryBus.execute<GetUserByEmailQuery, UserWithCredentials | null>(
       new GetUserByEmailQuery(email),
@@ -55,6 +72,13 @@ export class AuthService {
     return { user, tokens: { accessToken: await this.signToken(user) } };
   }
 
+  /**
+   * Возвращает профиль текущего пользователя по ID из JWT.
+   *
+   * @param userId - UUID из поля `sub` JWT-payload.
+   * @returns `PublicUser` (id, name, email).
+   * @throws {UnauthorizedException} Если пользователь не найден (например, удалён после выдачи токена).
+   */
   async getMe(userId: string): Promise<PublicUser> {
     const user = await this.queryBus.execute<GetUserByIdQuery, PublicUser | null>(
       new GetUserByIdQuery(userId),
@@ -65,6 +89,12 @@ export class AuthService {
     return user;
   }
 
+  /**
+   * Подписывает JWT-токен для пользователя.
+   *
+   * @param user - Данные пользователя; `id` становится `sub`, `email` включается в payload.
+   * @returns Подписанный JWT-токен.
+   */
   private signToken(user: PublicUser): Promise<string> {
     const payload: AccessJwtPayload = { sub: user.id, email: user.email };
     return this.jwt.signAsync(payload);

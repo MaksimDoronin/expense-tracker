@@ -29,6 +29,16 @@ export class CategoriesService {
     private readonly queryBus: QueryBus,
   ) {}
 
+  /**
+   * Создаёт категорию для указанного пользователя.
+   * Имя категории уникально в рамках одного пользователя (unique constraint `(userId, name)`).
+   *
+   * @param userId - UUID владельца категории.
+   * @param dto - Название, цвет и иконка новой категории.
+   * @returns Созданная категория (`PublicCategory`).
+   * @throws {OwnerNotFoundError} Если пользователь не найден в БД.
+   * @throws {CategoryNameTakenError} Если категория с таким именем уже существует у пользователя.
+   */
   async create(userId: string, dto: CreateCategoryDto): Promise<PublicCategory> {
     const user = await this.queryBus.execute(new GetUserByIdQuery(userId));
     if (!user) throw new OwnerNotFoundError();
@@ -46,6 +56,12 @@ export class CategoriesService {
     }
   }
 
+  /**
+   * Возвращает все категории пользователя, отсортированные по дате создания.
+   *
+   * @param userId - UUID пользователя.
+   * @returns Массив `PublicCategory[]`, отсортированный по `createdAt ASC`.
+   */
   async findAllForUser(userId: string): Promise<PublicCategory[]> {
     return this.prisma.category.findMany({
       where: { userId },
@@ -54,6 +70,16 @@ export class CategoriesService {
     });
   }
 
+  /**
+   * Частично обновляет категорию. Проверяет принадлежность пользователю перед обновлением.
+   *
+   * @param userId - UUID владельца; используется для авторизации.
+   * @param id - UUID обновляемой категории.
+   * @param dto - Поля для обновления; непереданные поля остаются без изменений.
+   * @returns Обновлённая категория (`PublicCategory`).
+   * @throws {CategoryNotFoundError} Если категория не найдена или не принадлежит пользователю.
+   * @throws {CategoryNameTakenError} Если новое имя уже занято у пользователя.
+   */
   async update(userId: string, id: string, dto: UpdateCategoryDto): Promise<PublicCategory> {
     const existing = await this.prisma.category.findFirst({ where: { id, userId } });
     if (!existing) throw new CategoryNotFoundError();
@@ -72,6 +98,14 @@ export class CategoriesService {
     }
   }
 
+  /**
+   * Удаляет категорию. Удаление невозможно, если к категории привязаны транзакции (`Restrict`).
+   *
+   * @param userId - UUID владельца; используется для авторизации.
+   * @param id - UUID удаляемой категории.
+   * @returns `void`
+   * @throws {CategoryNotFoundError} Если категория не найдена или не принадлежит пользователю.
+   */
   async remove(userId: string, id: string): Promise<void> {
     const existing = await this.prisma.category.findFirst({ where: { id, userId } });
     if (!existing) throw new CategoryNotFoundError();

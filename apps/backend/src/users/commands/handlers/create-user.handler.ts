@@ -9,6 +9,14 @@ import { CreateUserCommand } from '../create-user.command';
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand, PublicUser> {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Создаёт пользователя в БД. Перехватывает Prisma P2002 (unique violation) и
+   * преобразует его в `EmailAlreadyExistsError` для доменной обработки в `AuthService`.
+   *
+   * @param command - Данные нового пользователя.
+   * @returns Созданный `PublicUser` (id, name, email).
+   * @throws {EmailAlreadyExistsError} Если email уже занят.
+   */
   async execute(command: CreateUserCommand): Promise<PublicUser> {
     try {
       const user = await this.prisma.user.create({
