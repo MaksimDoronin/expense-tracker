@@ -22,15 +22,17 @@ export function RegisterForm() {
   } = form;
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Создать аккаунт</CardTitle>
+    <Card className="w-full">
+      <CardHeader className="pb-5">
+        <CardTitle className="text-2xl">Создать аккаунт</CardTitle>
         <CardDescription>Введите данные для регистрации</CardDescription>
       </CardHeader>
       <form onSubmit={onSubmit}>
         <CardContent className="flex flex-col gap-4">
           {serverError && (
-            <p className="whitespace-pre-line text-sm text-destructive">{serverError}</p>
+            <p className="bg-danger-soft text-danger-soft-foreground rounded-xl px-3.5 py-2.5 text-[13px] font-medium whitespace-pre-line">
+              {serverError}
+            </p>
           )}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="name">Имя</Label>
@@ -42,7 +44,7 @@ export function RegisterForm() {
               {...register('name')}
             />
             {errors.name && (
-              <p className="text-xs text-destructive">{errors.name.message}</p>
+              <p className="text-danger text-[12px] font-medium">{errors.name.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
@@ -55,7 +57,7 @@ export function RegisterForm() {
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-xs text-destructive">{errors.email.message}</p>
+              <p className="text-danger text-[12px] font-medium">{errors.email.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
@@ -68,43 +70,43 @@ export function RegisterForm() {
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-xs text-destructive">{errors.password.message}</p>
+              <p className="text-danger text-[12px] font-medium">{errors.password.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2.5">
               <input
                 id="terms"
                 type="checkbox"
-                className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-foreground"
+                className="accent-success mt-0.5 size-4 shrink-0 cursor-pointer rounded"
                 {...register('terms')}
               />
-              <Label htmlFor="terms" className="cursor-pointer font-normal leading-snug">
+              <Label
+                htmlFor="terms"
+                className="text-muted-foreground cursor-pointer text-[13px] leading-snug font-normal"
+              >
                 Согласен с{' '}
-                <Link href="/terms" className="underline underline-offset-4 hover:text-primary">
+                <Link href="/terms" className="text-success font-semibold hover:underline">
                   пользовательским соглашением
                 </Link>{' '}
                 и{' '}
-                <Link href="/privacy" className="underline underline-offset-4 hover:text-primary">
+                <Link href="/privacy" className="text-success font-semibold hover:underline">
                   политикой обработки данных
                 </Link>
               </Label>
             </div>
             {errors.terms && (
-              <p className="text-xs text-destructive">{errors.terms.message}</p>
+              <p className="text-danger text-[12px] font-medium">{errors.terms.message}</p>
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-3">
+        <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? 'Создание аккаунта…' : 'Создать аккаунт'}
           </Button>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Уже есть аккаунт?{' '}
-            <Link
-              href="/login"
-              className="text-foreground underline underline-offset-4 hover:text-primary"
-            >
+            <Link href="/login" className="text-success font-semibold hover:underline">
               Войти
             </Link>
           </p>

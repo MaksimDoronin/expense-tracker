@@ -15,7 +15,7 @@ const schema = z.object({
     .string()
     .min(8, 'Пароль должен содержать минимум 8 символов')
     .max(128, 'Пароль слишком длинный'),
-  terms: z.literal(true, { errorMap: () => ({ message: 'Необходимо принять условия' }) }),
+  terms: z.literal(true, { message: 'Необходимо принять условия' }),
 });
 
 type FormValues = z.infer<typeof schema>;

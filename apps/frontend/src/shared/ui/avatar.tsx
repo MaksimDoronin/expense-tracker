@@ -17,7 +17,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     <div
       ref={ref}
       className={cn(
-        'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground',
+        'from-foreground via-foreground to-foreground/65 text-panel flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-[13px] font-bold tracking-wide uppercase ring-1 ring-black/10',
         className,
       )}
       aria-label={name}

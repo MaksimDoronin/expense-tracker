@@ -22,15 +22,17 @@ export function LoginForm() {
   } = form;
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Вход</CardTitle>
+    <Card className="w-full">
+      <CardHeader className="pb-5">
+        <CardTitle className="text-2xl">Вход</CardTitle>
         <CardDescription>Введите данные для входа в аккаунт</CardDescription>
       </CardHeader>
       <form onSubmit={onSubmit}>
         <CardContent className="flex flex-col gap-4">
           {serverError && (
-            <p className="whitespace-pre-line text-sm text-destructive">{serverError}</p>
+            <p className="bg-danger-soft text-danger-soft-foreground rounded-xl px-3.5 py-2.5 text-[13px] font-medium whitespace-pre-line">
+              {serverError}
+            </p>
           )}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="email">Электронная почта</Label>
@@ -42,7 +44,7 @@ export function LoginForm() {
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-xs text-destructive">{errors.email.message}</p>
+              <p className="text-danger text-[12px] font-medium">{errors.email.message}</p>
             )}
           </div>
           <div className="flex flex-col gap-1.5">
@@ -55,20 +57,17 @@ export function LoginForm() {
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-xs text-destructive">{errors.password.message}</p>
+              <p className="text-danger text-[12px] font-medium">{errors.password.message}</p>
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-3">
+        <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? 'Выполняется вход…' : 'Войти'}
           </Button>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Нет аккаунта?{' '}
-            <Link
-              href="/register"
-              className="text-foreground underline underline-offset-4 hover:text-primary"
-            >
+            <Link href="/register" className="text-success font-semibold hover:underline">
               Зарегистрироваться
             </Link>
           </p>

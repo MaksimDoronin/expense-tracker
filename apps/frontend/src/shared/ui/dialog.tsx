@@ -32,7 +32,7 @@ export function Dialog({ open, onClose, title, description, children, className 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="animate-fade-in bg-foreground/25 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-[3px]"
       onClick={onClose}
       role="presentation"
     >
@@ -42,7 +42,7 @@ export function Dialog({ open, onClose, title, description, children, className 
         aria-labelledby={title ? 'dialog-title' : undefined}
         aria-describedby={description ? 'dialog-description' : undefined}
         className={cn(
-          'relative w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-xl',
+          'animate-pop-in border-border bg-card relative w-full max-w-md rounded-[1.5rem] border p-7 shadow-[var(--shadow-pop)]',
           className,
         )}
         onClick={(e) => e.stopPropagation()}
@@ -51,14 +51,22 @@ export function Dialog({ open, onClose, title, description, children, className 
           type="button"
           onClick={onClose}
           aria-label="Закрыть"
-          className="absolute right-3 top-3 rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+          className="text-muted-foreground hover:bg-accent hover:text-foreground absolute top-4 right-4 rounded-lg p-1.5 transition-colors"
         >
-          <X className="h-4 w-4" />
+          <X className="size-4" />
         </button>
         {(title || description) && (
-          <div className="mb-4 flex flex-col gap-1 pr-6">
-            {title && <h2 id="dialog-title" className="text-lg font-semibold">{title}</h2>}
-            {description && <p id="dialog-description" className="text-sm text-muted-foreground">{description}</p>}
+          <div className="mb-5 flex flex-col gap-1 pr-7">
+            {title && (
+              <h2 id="dialog-title" className="text-xl font-bold tracking-tight">
+                {title}
+              </h2>
+            )}
+            {description && (
+              <p id="dialog-description" className="text-muted-foreground text-sm">
+                {description}
+              </p>
+            )}
           </div>
         )}
         {children}

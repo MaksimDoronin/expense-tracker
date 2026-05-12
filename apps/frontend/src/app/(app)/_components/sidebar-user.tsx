@@ -19,10 +19,10 @@ export function SidebarUser() {
 
   if (!user) {
     return (
-      <div className="flex items-center gap-3 rounded-md border border-border bg-card p-3">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="flex flex-1 flex-col gap-1">
-          <Skeleton className="h-4 w-24" />
+      <div className="bg-card flex items-center gap-3 rounded-2xl p-3 shadow-[var(--shadow-pill)]">
+        <Skeleton className="size-10 rounded-full" />
+        <div className="flex flex-1 flex-col gap-1.5">
+          <Skeleton className="h-3.5 w-24" />
           {isLoading && <Skeleton className="h-3 w-32" />}
         </div>
       </div>
@@ -30,20 +30,20 @@ export function SidebarUser() {
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-md border border-border bg-card p-3">
+    <div className="bg-card flex items-center gap-3 rounded-2xl p-2.5 pr-1.5 shadow-[var(--shadow-pill)]">
       <Avatar name={user.name} />
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold">{user.name}</div>
-        <div className="truncate text-xs text-muted-foreground">{user.email}</div>
+        <div className="truncate text-[13.5px] leading-tight font-bold">{user.name}</div>
+        <div className="text-muted-foreground truncate text-[12px]">{user.email}</div>
       </div>
       <button
         type="button"
         onClick={handleLogout}
         title="Выйти"
         aria-label="Выйти"
-        className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        className="text-muted-foreground hover:bg-danger-soft hover:text-danger-soft-foreground shrink-0 rounded-xl p-2 transition-colors"
       >
-        <LogOut className="h-4 w-4" />
+        <LogOut className="size-[17px]" />
       </button>
     </div>
   );

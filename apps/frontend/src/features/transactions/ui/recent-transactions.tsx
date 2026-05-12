@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Receipt } from 'lucide-react';
 import type { Category } from '@expense-tracker/shared';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -23,26 +23,41 @@ export function RecentTransactions({ categories }: Props) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-3">
-        <CardTitle>Последние транзакции</CardTitle>
+        <div className="space-y-0.5">
+          <CardTitle>Последние операции</CardTitle>
+          <p className="text-muted-foreground text-[13px]">Доходы и расходы</p>
+        </div>
         <Button size="sm" onClick={() => setDialogOpen(true)}>
-          <Plus className="h-4 w-4" />
+          <Plus className="size-4" strokeWidth={2.4} />
           Добавить
         </Button>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-12 w-full" />
+              <Skeleton key={i} className="h-[58px] w-full rounded-2xl" />
             ))}
           </div>
         ) : error ? (
-          <p className="text-sm text-destructive">{error}</p>
+          <div className="bg-danger-soft text-danger-soft-foreground rounded-2xl px-4 py-3 text-sm font-medium">
+            {error}
+          </div>
         ) : visibleItems.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Транзакций пока нет.</p>
+          <div className="flex flex-col items-center gap-3 py-10 text-center">
+            <span className="bg-muted text-muted-foreground grid size-12 place-items-center rounded-2xl">
+              <Receipt className="size-5" strokeWidth={1.75} />
+            </span>
+            <div className="space-y-0.5">
+              <p className="text-foreground text-sm font-bold">Пока нет операций</p>
+              <p className="text-muted-foreground text-[13px]">
+                Добавьте первую транзакцию, чтобы увидеть её здесь.
+              </p>
+            </div>
+          </div>
         ) : (
           <>
-            <ul className="divide-y divide-border">
+            <ul className="flex flex-col gap-0.5">
               {visibleItems.map((tx) => (
                 <li key={tx.id}>
                   <TransactionListItem transaction={tx} category={map.get(tx.categoryId)} />
@@ -51,7 +66,7 @@ export function RecentTransactions({ categories }: Props) {
             </ul>
             {hasMore && (
               <div className="mt-4 flex justify-center">
-                <Button variant="outline" onClick={loadMore}>
+                <Button variant="outline" size="sm" onClick={loadMore}>
                   Загрузить ещё
                 </Button>
               </div>

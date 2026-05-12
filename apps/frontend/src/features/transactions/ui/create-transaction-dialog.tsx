@@ -73,32 +73,40 @@ export function CreateTransactionDialog({ open, onClose, onCreated, categories }
   const noCategories = categories.length === 0;
 
   return (
-    <Dialog open={open} onClose={onClose} title="Новая транзакция">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title="Новая транзакция"
+      description="Добавьте доход или расход в историю операций."
+    >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {noCategories && (
-          <p className="text-sm text-destructive">
+          <p className="bg-danger-soft text-danger-soft-foreground rounded-xl px-3.5 py-2.5 text-[13px] font-medium">
             Сначала создайте хотя бы одну категорию.
           </p>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
-          {(['expense', 'income'] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setType(t)}
-              className={cn(
-                'rounded-md border px-3 py-2 text-sm font-medium transition-colors',
-                type === t
-                  ? t === 'income'
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700'
-                    : 'border-rose-600 bg-rose-50 text-rose-700'
-                  : 'border-border bg-background text-muted-foreground hover:bg-accent',
-              )}
-            >
-              {t === 'income' ? 'Доход' : 'Расход'}
-            </button>
-          ))}
+        <div className="bg-muted grid grid-cols-2 gap-2 rounded-2xl p-1">
+          {(['expense', 'income'] as const).map((t) => {
+            const selected = type === t;
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setType(t)}
+                className={cn(
+                  'rounded-xl px-3 py-2 text-sm font-semibold transition-all duration-150',
+                  selected
+                    ? t === 'income'
+                      ? 'bg-card text-success shadow-[var(--shadow-pill)]'
+                      : 'bg-card text-foreground shadow-[var(--shadow-pill)]'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {t === 'income' ? 'Доход' : 'Расход'}
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -123,7 +131,7 @@ export function CreateTransactionDialog({ open, onClose, onCreated, categories }
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             disabled={noCategories}
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-card focus-visible:border-ring focus-visible:ring-ring/35 h-10 rounded-xl border px-3.5 text-sm shadow-sm transition-colors focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           >
             {noCategories && <option value="">Категорий нет</option>}
@@ -152,14 +160,19 @@ export function CreateTransactionDialog({ open, onClose, onCreated, categories }
             id="description"
             type="text"
             maxLength={500}
+            placeholder="Например: продукты на неделю"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (
+          <p className="bg-danger-soft text-danger-soft-foreground rounded-xl px-3.5 py-2.5 text-[13px] font-medium">
+            {error}
+          </p>
+        )}
 
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex justify-end gap-2 pt-1">
           <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
             Отмена
           </Button>
