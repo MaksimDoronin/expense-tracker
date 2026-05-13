@@ -5,20 +5,37 @@ import type { Category } from '@expense-tracker/shared';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 
+/** Пропсы компонента `CategoriesList`. */
 interface Props {
+  /** Массив категорий для отображения. */
   items: Category[];
+  /** При `true` отображаются скелетоны вместо содержимого. */
   isLoading: boolean;
+  /** Текст ошибки загрузки; при наличии отображается вместо списка. */
   error: string | null;
+  /** Вызывается при клике «Редактировать» для конкретной категории. */
   onEdit: (category: Category) => void;
+  /** Вызывается при клике «Удалить» для конкретной категории. */
   onDelete: (category: Category) => void;
 }
 
+/**
+ * Список категорий пользователя с кнопками редактирования и удаления.
+ * Обрабатывает три состояния: загрузка (скелетоны), ошибка, пустой список.
+ *
+ * @param props.items - Массив категорий для отображения.
+ * @param props.isLoading - При `true` отображает скелетоны.
+ * @param props.error - При наличии отображает сообщение об ошибке.
+ * @param props.onEdit - Колбэк при клике кнопки редактирования.
+ * @param props.onDelete - Колбэк при клике кнопки удаления.
+ * @returns JSX: список категорий, скелетоны, ошибка или пустой стейт.
+ */
 export function CategoriesList({ items, isLoading, error, onEdit, onDelete }: Props) {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+        {['sk-0', 'sk-1', 'sk-2', 'sk-3'].map((key) => (
+          <Skeleton key={key} className="h-16 w-full rounded-2xl" />
         ))}
       </div>
     );

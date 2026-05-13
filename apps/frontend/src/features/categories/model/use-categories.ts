@@ -4,6 +4,17 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Category } from '@expense-tracker/shared';
 import { categoriesApi } from '@/features/categories/api/categories.api';
 
+/**
+ * Хук для получения и управления списком категорий текущего пользователя.
+ * Загружает данные при монтировании и при каждом вызове `refresh()`.
+ * Отменяет запрос при размонтировании компонента.
+ *
+ * @returns Объект с:
+ *  - `items` — массив загруженных категорий;
+ *  - `isLoading` — `true` пока идёт запрос;
+ *  - `error` — сообщение об ошибке или `null`;
+ *  - `refresh` — функция для принудительной перезагрузки данных.
+ */
 export function useCategories() {
   const [items, setItems] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);

@@ -1,22 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Category } from '@expense-tracker/shared';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
+import { ApiError } from '@/shared/api/client';
 import { categoriesApi } from '@/features/categories/api/categories.api';
 
+/** Пропсы компонента `DeleteCategoryDialog`. */
 interface Props {
+  /** Управляет видимостью диалога. */
   open: boolean;
+  /** Вызывается при отмене удаления. */
   onClose: () => void;
+  /** Вызывается после успешного удаления категории. */
   onDeleted: () => void;
+  /** Удаляемая категория; `null` означает, что диалог неактивен. */
   category: Category | null;
 }
 
+/**
+ * Диалог подтверждения удаления категории.
+ * Блокирует удаление, если к категории привязаны транзакции (HTTP 409 от сервера).
+ *
+ * @param props.open - Управляет видимостью диалога.
+ * @param props.onClose - Вызывается при отмене удаления.
+ * @param props.onDeleted - Вызывается после успешного удаления.
+ * @param props.category - Удаляемая категория; `null` — диалог неактивен.
+ */
 export function DeleteCategoryDialog({ open, onClose, onDeleted, category }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+    setError(null);
+    setIsDeleting(false);
+  }, [open]);
+
+  /**
+   * Отправляет запрос на удаление категории и обновляет состояние.
+   *
+   * @returns Промис.
+   * @throws {ApiError} Перехватывается внутри: 409 → ошибка привязанных транзакций, прочее → общее сообщение.
+   */
   const handleDelete = async () => {
     if (!category) return;
     setError(null);
@@ -26,15 +53,11 @@ export function DeleteCategoryDialog({ open, onClose, onDeleted, category }: Pro
       onDeleted();
       onClose();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : '';
-      setError(
-        msg.toLowerCase().includes('restrict') ||
-          msg.includes('транзакц') ||
-          msg.includes('P2003') ||
-          msg.includes('409')
-          ? 'Нельзя удалить категорию, у которой есть транзакции.'
-          : msg || 'Не удалось удалить категорию.',
-      );
+      if (err instanceof ApiError && err.status === 409) {
+        setError('Нельзя удалить категорию, у которой есть транзакции.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Не удалось удалить категорию.');
+      }
     } finally {
       setIsDeleting(false);
     }

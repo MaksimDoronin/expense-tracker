@@ -7,16 +7,31 @@ import { Dialog } from '@/shared/ui/dialog';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { cn } from '@/shared/lib/utils';
+import { ApiError } from '@/shared/api/client';
 import { categoriesApi } from '@/features/categories/api/categories.api';
 import { ICON_PRESETS, COLOR_PRESETS } from '@/features/categories/model/presets';
 
+/** Пропсы компонента `CategoryFormDialog`. */
 interface Props {
+  /** Управляет видимостью диалога. */
   open: boolean;
+  /** Вызывается при закрытии диалога без сохранения. */
   onClose: () => void;
+  /** Вызывается после успешного создания или обновления категории. */
   onSaved: () => void;
+  /** Категория для редактирования; если не передана — диалог работает в режиме создания. */
   category?: Category;
 }
 
+/**
+ * Диалог создания или редактирования категории.
+ * Режим определяется наличием пропа `category`: передан — редактирование, не передан — создание.
+ *
+ * @param props.open - Управляет видимостью диалога.
+ * @param props.onClose - Вызывается при закрытии без сохранения.
+ * @param props.onSaved - Вызывается после успешного сохранения.
+ * @param props.category - Категория для редактирования; `undefined` — режим создания.
+ */
 export function CategoryFormDialog({ open, onClose, onSaved, category }: Props) {
   const isEdit = !!category;
 
@@ -35,6 +50,13 @@ export function CategoryFormDialog({ open, onClose, onSaved, category }: Props) 
     setIsSubmitting(false);
   }, [open, category]);
 
+  /**
+   * Обработчик отправки формы: валидирует имя, вызывает API и обновляет состояние.
+   *
+   * @param e - Событие отправки формы.
+   * @returns Промис.
+   * @throws {ApiError} Перехватывается внутри: 409 → ошибка занятого имени, прочее → общее сообщение.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = name.trim();
@@ -53,10 +75,11 @@ export function CategoryFormDialog({ open, onClose, onSaved, category }: Props) 
       onSaved();
       onClose();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Не удалось сохранить категорию';
-      setError(msg.includes('уже') || msg.toLowerCase().includes('conflict') || msg.includes('409')
-        ? 'Категория с таким именем уже существует.'
-        : msg);
+      if (err instanceof ApiError && err.status === 409) {
+        setError('Категория с таким именем уже существует.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Не удалось сохранить категорию.');
+      }
     } finally {
       setIsSubmitting(false);
     }
