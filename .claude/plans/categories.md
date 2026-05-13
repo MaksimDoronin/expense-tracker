@@ -76,6 +76,54 @@
 
 ---
 
+---
+
+## Фронтенд: управление категориями (CRUD)
+
+### Context (frontend)
+Бэкенд реализован полностью. На фронтенде есть только `categoriesApi.list()` и хук `useCategoriesMap()`, страница `/categories` — заглушка. Нужно: список категорий, создание/редактирование через модальный диалог, удаление с подтверждением. Иконка и цвет — пресеты.
+
+### Чек-лист (frontend)
+
+#### 1. API клиент (`features/categories/api/categories.api.ts`)
+- [ ] Добавить `create(data: CreateCategoryInput)`
+- [ ] Добавить `update(id: string, data: UpdateCategoryInput)`
+- [ ] Добавить `remove(id: string)`
+
+#### 2. Хук `useCategories` (`features/categories/model/use-categories.ts`)
+- [ ] Состояние: `items`, `isLoading`, `error`, `reloadKey`
+- [ ] Метод `refresh()` через `reloadKey` (без пагинации)
+
+#### 3. Пресеты (`features/categories/model/presets.ts`)
+- [ ] `ICON_PRESETS`: 🍔 🛒 🚗 🏠 💼 🎮 ✈️ 💊 📚 🎁 💡 ☕
+- [ ] `COLOR_PRESETS`: 8 hex-значений из дизайн-системы
+
+#### 4. Диалог формы (`features/categories/ui/category-form-dialog.tsx`)
+- [ ] `react-hook-form` + `zod` (name min1/max60, color hex, icon min1/max40)
+- [ ] Поля: текстовый input, сетка иконок, сетка цветов
+- [ ] Режим create/edit через проп `category?: Category`
+- [ ] Обработка 409 → «Категория с таким именем уже существует»
+
+#### 5. Диалог удаления (`features/categories/ui/delete-category-dialog.tsx`)
+- [ ] Подтверждение → `categoriesApi.remove(id)`
+- [ ] Обработка ошибки Restrict → «Нельзя удалить категорию с транзакциями»
+
+#### 6. Список (`features/categories/ui/categories-list.tsx`)
+- [ ] Карточки с иконкой, цветом, именем
+- [ ] Кнопки «Редактировать» и «Удалить» на каждой карточке
+
+#### 7. Страница `/categories` (`app/(app)/categories/page.tsx`)
+- [ ] `PageHeader` + кнопка «Добавить категорию»
+- [ ] Монтировать `CategoriesList`, `CategoryFormDialog`, `DeleteCategoryDialog`
+- [ ] Локальный state: `creating`, `editing: Category | null`, `deleting: Category | null`
+
+#### 8. Проверка
+- [ ] `npm run type-check --workspace=frontend`
+- [ ] `npm run lint`
+- [ ] Ручной: создание, дубликат имени, редактирование, удаление без/с транзакциями
+
+---
+
 ## Критические файлы
 
 - `prisma/schema.prisma`
