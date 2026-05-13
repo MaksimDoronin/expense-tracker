@@ -4,6 +4,15 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Category } from '@expense-tracker/shared';
 import { categoriesApi } from '@/features/categories/api/categories.api';
 
+/**
+ * Хук для получения категорий пользователя в виде `Map<id, Category>`.
+ * Используется там, где категории нужны только для быстрого поиска по id
+ * (например, при отображении транзакций). При ошибке загрузки возвращает пустую Map.
+ *
+ * @returns Объект с:
+ *  - `categories` — `Map<string, Category>`, построенная из массива категорий;
+ *  - `isLoading` — `true` пока идёт запрос.
+ */
 export function useCategoriesMap() {
   const [items, setItems] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);

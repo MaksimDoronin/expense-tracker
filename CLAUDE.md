@@ -151,3 +151,7 @@ EOF
 ## Соглашение о коммитах
 
 Используется [Conventional Commits](https://www.conventionalcommits.org/). Правила и типы — в скилле `/commit`.
+
+## Обновление docs
+
+При добавлении функционала проверять документацию в @.claude/docs/* и актуализируй

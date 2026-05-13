@@ -30,9 +30,13 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   /**
+   * Создаёт новую категорию для аутентифицированного пользователя.
+   *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @param dto - Название, цвет и иконка новой категории.
    * @returns Созданная категория (`PublicCategory`). HTTP-статусы — см. `@ApiResponse`.
+   * @throws {UnauthorizedException} Если пользователь не найден в БД.
+   * @throws {ConflictException} Если категория с таким именем уже существует.
    */
   @Post()
   @ApiOperation({ summary: 'Создать категорию' })
@@ -54,6 +58,8 @@ export class CategoriesController {
   }
 
   /**
+   * Возвращает все категории текущего пользователя.
+   *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @returns Массив `PublicCategory[]`, отсортированный по дате создания (ASC). HTTP-статусы — см. `@ApiResponse`.
    */
@@ -66,10 +72,14 @@ export class CategoriesController {
   }
 
   /**
+   * Частично обновляет категорию, принадлежащую текущему пользователю.
+   *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @param id - UUID обновляемой категории.
    * @param dto - Поля для обновления; непереданные поля остаются без изменений.
    * @returns Обновлённая категория (`PublicCategory`). HTTP-статусы — см. `@ApiResponse`.
+   * @throws {NotFoundException} Если категория не найдена или не принадлежит пользователю.
+   * @throws {ConflictException} Если новое имя уже занято у пользователя.
    */
   @Patch(':id')
   @ApiOperation({ summary: 'Обновить категорию' })
@@ -93,9 +103,12 @@ export class CategoriesController {
   }
 
   /**
+   * Удаляет категорию, принадлежащую текущему пользователю.
+   *
    * @param user - JWT-payload аутентифицированного пользователя.
    * @param id - UUID удаляемой категории.
    * @returns `void`. HTTP-статусы — см. `@ApiResponse`.
+   * @throws {NotFoundException} Если категория не найдена или не принадлежит пользователю.
    */
   @Delete(':id')
   @HttpCode(204)

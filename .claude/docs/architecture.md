@@ -124,7 +124,7 @@ src/
       _components/        # приватные компоненты layout-а (не переиспользуются)
   features/
     auth/                 # авторизация: AuthProvider, формы, guard
-    categories/           # список категорий
+    categories/           # CRUD категорий: api, presets, useCategories, useCategoriesMap, диалоги создания/редактирования/удаления
     transactions/         # список, создание транзакций
   shared/
     api/client.ts         # apiRequest<T>(), ApiError
@@ -157,7 +157,7 @@ src/
 
 Нет глобального стора. Состояние через:
 - `AuthProvider` (React Context) — данные пользователя и токен
-- Хуки с локальным `useState` — данные страниц (`useTransactions`, `useCategoriesMap`)
+- Хуки с локальным `useState` — данные страниц (`useTransactions`, `useCategories`, `useCategoriesMap`)
 - `react-hook-form` + `zod` — формы
 
 ---
