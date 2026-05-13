@@ -50,7 +50,7 @@ enum TransactionType {
 | `id`        | String   | UUID |
 | `name`      | String   | Название категории |
 | `color`     | String   | Цвет (CSS hex, например `#4ade80`) |
-| `icon`      | String   | Иконка (строка-идентификатор, например `shopping-cart`) |
+| `icon`      | String   | Иконка (строка; фронтенд использует эмодзи, например `🛒`) |
 | `userId`    | String   | Внешний ключ → `User.id` |
 | `createdAt` | DateTime | Дата создания |
 | `updatedAt` | DateTime | Дата обновления |

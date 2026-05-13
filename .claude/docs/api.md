@@ -97,7 +97,7 @@ Authorization: Bearer <accessToken>
 {
   "name": "Продукты",
   "color": "#4ade80",
-  "icon": "shopping-cart"
+  "icon": "🛒"
 }
 ```
 
@@ -107,7 +107,7 @@ Authorization: Bearer <accessToken>
   "id": "uuid",
   "name": "Продукты",
   "color": "#4ade80",
-  "icon": "shopping-cart",
+  "icon": "🛒",
   "userId": "uuid",
   "createdAt": "2026-05-11T10:00:00.000Z",
   "updatedAt": "2026-05-11T10:00:00.000Z"
@@ -140,7 +140,7 @@ Authorization: Bearer <accessToken>
 {
   "name": "Еда",
   "color": "#22c55e",
-  "icon": "utensils"
+  "icon": "🍽️"
 }
 ```
 
@@ -167,6 +167,7 @@ Authorization: Bearer <accessToken>
 | 204    | Удалено |
 | 401    | Не аутентифицирован |
 | 404    | Не найдено |
+| 409    | Удаление невозможно — к категории привязаны транзакции |
 
 ---
 
