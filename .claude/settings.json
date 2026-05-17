@@ -9,11 +9,13 @@
         "hooks": [
           {
             "type": "command",
+            "if": "Edit(*.ts) | Write(*.ts)",
             "command": "jq -r '.tool_input.file_path' | xargs npx prettier --write --ignore-unknown"
           },
           {
             "type": "command",
-            "command": "FILE=$(jq -r '.tool_input.file_path'); echo \"$FILE\" | grep -qE '\\.(ts|tsx|js|jsx)$' && node_modules/.bin/eslint --fix \"$FILE\" 2>&1 || true"
+            "if": "Edit(*.ts) | Write(*.ts)",
+            "command": "npm run lint -- --fix"
           }
         ]
       }
